@@ -15,6 +15,10 @@ module FakeSNS
         @topic = db.topics.fetch(topic_arn) do
           raise InvalidParameterValue, "Unknown topic: #{topic_arn}" unless target_arn
         end
+        if target_arn =~ /arn:aws:sns:[a-z0-9\\-]+:[0-9]+:endpoint\/(GCM|APNS|APNS_SANDBOX)\/DebugApp\/endpointdisabled/
+          raise InvalidParameterValue, "EndpointDisabled: Endpoint is disabled"
+        end
+
         @message_id = SecureRandom.uuid
 
         db.messages.create(
