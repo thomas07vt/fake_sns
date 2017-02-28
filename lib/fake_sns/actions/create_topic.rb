@@ -29,13 +29,20 @@ module FakeSNS
       end
 
       def generate_arn
-        "arn:aws:sns:us-east-1:#{SecureRandom.hex}:#{name}"
+        "arn:aws:sns:#{region}:#{account}:#{name}"
       end
 
       def existing_topic
         db.topics.find { |t| t["name"] == name }
       end
 
+      def region
+        ENV['fake_sns_region'] || 'us-east-1'
+      end
+
+      def account
+        ENV['fake_sns_account'] || SecureRandom.hex
+      end
     end
   end
 end

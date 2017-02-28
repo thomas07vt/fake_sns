@@ -42,14 +42,14 @@ $fake_sqs = FakeSQS::TestIntegration.new(
 )
 
 module SpecHelper
-  def sns
+  def sns(port='9293')
     Aws::SNS::Client.new.tap { |client|
-      client.config.endpoint = URI("http://localhost:9293")
+      client.config.endpoint = URI("http://localhost:#{port}")
     }
   end
-  def sqs
+  def sqs(port='4568')
     Aws::SQS::Client.new.tap { |client|
-      client.config.endpoint = URI("http://localhost:4568")
+      client.config.endpoint = URI("http://localhost:#{port}")
     }
   end
 end
