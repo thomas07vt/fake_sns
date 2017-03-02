@@ -28,6 +28,12 @@ module FakeSNS
       @messages ||= MessageCollection.new(store)
     end
 
+    def delete_message(message_id)
+      transaction do
+        messages.delete_message(message_id)
+      end
+    end
+
     def reset
       topics.reset
       subscriptions.reset

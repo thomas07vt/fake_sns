@@ -48,6 +48,8 @@ module FakeSNS
               request: '',
               config: {}
             })
+
+            db.delete_message(message_id)
           end
         end
       end

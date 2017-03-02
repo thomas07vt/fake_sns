@@ -57,6 +57,8 @@ module FakeSNS
           database.each_deliverable_message do |subscription, message|
             DeliverMessage.call(subscription: subscription, message: message, request: request, config: config)
           end
+
+          database.messages.reset
         end
       rescue => e
         status 500
@@ -74,6 +76,8 @@ module FakeSNS
             DeliverMessage.call(subscription: subscription, message: message, request: request, config: config)
           end
         end
+
+        database.delete_message(message_id)
       end
       200
     end

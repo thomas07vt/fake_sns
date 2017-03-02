@@ -36,5 +36,9 @@ module FakeSNS
       collection.delete(fetch(arn))
     end
 
+    def delete_message(message_id)
+      collection.delete_if { |msg| msg[:id] == message_id }
+    end
+
   end
 end
