@@ -51,7 +51,7 @@ module FakeSNS
     end
 
     post "/drain" do
-      config = JSON.parse(request.body.read.to_s)
+      config = JSON.parse(request.body.read.to_s) rescue {}
       begin
         database.transaction do
           database.each_deliverable_message do |subscription, message|
@@ -67,7 +67,7 @@ module FakeSNS
     end
 
     post "/drain/:message_id" do |message_id|
-      config = JSON.parse(request.body.read.to_s)
+      config = JSON.parse(request.body.read.to_s) rescue {}
       database.transaction do
         database.each_deliverable_message do |subscription, message|
           if message.id == message_id
@@ -76,6 +76,20 @@ module FakeSNS
         end
       end
       200
+    end
+
+    get '/test' do
+      require 'pry'
+      binding.pry
+
+      $my = []
+      database.transaction do
+        database.each_deliverable_message do |subscription, message|
+          puts subscription
+          puts message
+          $my << message
+        end
+      end
     end
 
   end

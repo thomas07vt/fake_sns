@@ -20,10 +20,11 @@ module FakeSNS
     attribute :structure, String
     attribute :target_arn, String
     attribute :received_at, DateTime
-    attribute :message, json
+    attribute :message, String #json
 
     def message_for_protocol(type)
-      message.fetch(type.to_s) { message.fetch("default") }
+      #message.fetch(type.to_s,) { message.fetch("default") }
+      message
     end
 
   end

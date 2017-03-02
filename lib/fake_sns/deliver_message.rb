@@ -18,7 +18,7 @@ module FakeSNS
       @subscription = options.fetch(:subscription)
       @message = options.fetch(:message)
       @request = options.fetch(:request)
-      @config = options.fetch(:config)
+      @config  = default_config.merge(options.fetch(:config, {}))
     end
 
     def call
@@ -33,13 +33,17 @@ module FakeSNS
     protected
 
     def sqs
-      queue_name = endpoint.split(":").last
-      sqs = Aws::SQS::Client.new(
-        region: config.fetch("region"),
-        credentials: Aws::Credentials.new(config.fetch("access_key_id"), config.fetch("secret_access_key")),
-      ).tap { |client|
-        client.config.endpoint = URI(config.fetch("sqs_endpoint"))
-      }
+      # TODO Make this work with sqs url and endpoint url
+      parts = endpoint.split('/')
+      queue_name = parts.pop
+      ep = parts.join('/')
+
+      sqs = Aws::SQS::Client.new({
+        region: region,
+        endpoint: ep,
+        access_key_id: config.fetch("access_key_id", 'test'),
+        secret_access_key: config.fetch("secret_access_key", 'test')
+      })
       queue_url = sqs.get_queue_url(queue_name: queue_name).queue_url
       sqs.send_message(queue_url: queue_url, message_body: message_contents)
     end
@@ -99,6 +103,18 @@ module FakeSNS
           "x-amz-sns-subscription-arn" => arn,
         }
       end
+    end
+
+    def default_config
+      {
+        'access_key_id'     => 'test',
+        'secret_access_key' => 'test',
+        'region'            => 'us-west-1'
+      }
+    end
+
+    def region
+      @config['region']
     end
 
   end

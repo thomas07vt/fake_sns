@@ -21,7 +21,7 @@ module FakeSNS
 
         @message_id = SecureRandom.uuid
 
-        db.messages.create(
+        msg = db.messages.create(
           id:          message_id,
           subject:     subject,
           message:     message,
@@ -30,10 +30,26 @@ module FakeSNS
           target_arn:  target_arn,
           received_at: Time.now,
         )
+
+        deliver(@message_id) if ENV['fake_sns_auto_deliver'].to_s == 'true'
+        msg
       end
 
       def message_id
         @message_id || raise(InternalFailure, "no message id yet, this should not happen")
+      end
+
+      def deliver(message_id)
+        db.each_deliverable_message do |subscription, message|
+          if message.id == message_id
+            DeliverMessage.call({
+              subscription: subscription,
+              message: message,
+              request: '',
+              config: {}
+            })
+          end
+        end
       end
 
     end
