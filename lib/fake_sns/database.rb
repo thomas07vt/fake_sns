@@ -29,9 +29,8 @@ module FakeSNS
     end
 
     def delete_message(message_id)
-      transaction do
-        messages.delete_message(message_id)
-      end
+      # Must be inside a db transaction
+      messages.delete_message(message_id)
     end
 
     def reset
