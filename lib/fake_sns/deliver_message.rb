@@ -44,8 +44,7 @@ module FakeSNS
         access_key_id: config.fetch("access_key_id", 'test'),
         secret_access_key: config.fetch("secret_access_key", 'test')
       })
-      queue_url = sqs.get_queue_url(queue_name: queue_name).queue_url
-      sqs.send_message(queue_url: queue_url, message_body: message_contents)
+      sqs.send_message(queue_url: endpoint, message_body: message_contents)
     end
 
     def http
